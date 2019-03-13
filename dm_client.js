@@ -31,6 +31,9 @@ class DMClient extends EventEmitter {
   }
 
   receiveData(data) {
+    /**
+     * @type {number | boolean}
+     */
     let start = 0
     while (start !== false) {
       start = this.parseMsg(data, start)
@@ -88,7 +91,7 @@ class DMClient extends EventEmitter {
    * @param {Number} start
    */
   parseMsg(data, start = 0) {
-    if (data.length <= 16) {
+    if (data.length <= start + 16) {
       return false
     }
 

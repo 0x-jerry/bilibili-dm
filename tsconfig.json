@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es6",
+    "allowJs": true,
+    "checkJs": true,
+    "outDir": "dist",
+    "module": "commonjs",
+    "types": ["axios"]
+  },
+  "exclude": ["node_modules"]
+}

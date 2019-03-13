@@ -2,5 +2,9 @@
   "dependencies": {
     "axios": "^0.18.0",
     "xml2js": "^0.4.19"
+  },
+  "devDependencies": {
+    "@types/node": "^11.11.3",
+    "@types/xml2js": "^0.4.3"
   }
 }
