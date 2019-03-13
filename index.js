@@ -30,7 +30,7 @@ const RoomInfo = {
 };
 
 hosts
-  .getRoomID(1150)
+  .getRoomID(281)
   .then((data) => {
     RoomInfo.id = +data.data.room_id;
     return hosts.getRoomInfo(RoomInfo.id);
