@@ -126,10 +126,9 @@ class DMClient extends EventEmitter {
       } else {
         try {
           const msg = JSON.parse(msgData)
-          // console.log('Received:', JSON.stringify(msg, null, 2))
-          console.log('Received ok')
+          console.log('Received:', msg)
 
-          this.emit('msg', msg)
+          this.emit(msg.cmd, msg)
 
           if (this.cacheData.length > 0) {
             this.cacheData = Buffer.alloc(0)
@@ -138,6 +137,8 @@ class DMClient extends EventEmitter {
           console.log('Parse error', data)
         }
       }
+    } else {
+      return false
     }
 
     const nextStart = start + packetLen
