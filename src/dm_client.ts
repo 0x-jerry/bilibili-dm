@@ -1,8 +1,14 @@
-const net = require('net')
-const { EventEmitter } = require('events')
+import * as net from 'net'
+import { EventEmitter } from 'events'
 
 class DMClient extends EventEmitter {
-  constructor(host, port, roomID) {
+  host: string
+  port: number
+  roomID: number
+  client: net.Socket
+  cacheData: Buffer
+
+  constructor(host: string, port: number, roomID: number) {
     super()
     this.host = host
     this.port = port
@@ -30,13 +36,10 @@ class DMClient extends EventEmitter {
     })
   }
 
-  receiveData(data) {
-    /**
-     * @type {number | boolean}
-     */
-    let start = 0
+  receiveData(data: Buffer) {
+    let start: boolean | number = 0
     while (start !== false) {
-      start = this.parseMsg(data, start)
+      start = this.parseMsg(data, start as number)
     }
   }
 
@@ -58,7 +61,7 @@ class DMClient extends EventEmitter {
     }
   }
 
-  sendSocketData(packetLength, magic, version, action, param = 1, body = '') {
+  sendSocketData(packetLength: number, magic: number, version: number, action: number, param = 1, body = '') {
     const payload = Buffer.from(body)
 
     if (packetLength === 0) {
@@ -85,12 +88,7 @@ class DMClient extends EventEmitter {
     }, 10000)
   }
 
-  /**
-   *
-   * @param {Buffer} data
-   * @param {Number} start
-   */
-  parseMsg(data, start = 0) {
+  parseMsg(data: Buffer, start: number = 0) {
     if (data.length <= start + 16) {
       return false
     }
@@ -146,4 +144,4 @@ class DMClient extends EventEmitter {
   }
 }
 
-module.exports = DMClient
+export default DMClient
