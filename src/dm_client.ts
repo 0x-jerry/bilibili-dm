@@ -8,7 +8,7 @@ export enum DMEvent {
   online_changed = 'online_changed',
   error = 'error',
   close = 'close',
-  data = 'data'
+  data = 'data',
 }
 
 class DMClient extends EventEmitter {
@@ -23,10 +23,8 @@ class DMClient extends EventEmitter {
     this.host = host
     this.port = port
     this.roomID = roomID
-
-    this.client = new net.Socket()
-
     this.cache = Buffer.alloc(0)
+    this.client = new net.Socket()
 
     this.client.connect(
       {
@@ -37,13 +35,8 @@ class DMClient extends EventEmitter {
     )
 
     this.client.on('data', (data) => this.receiveData(data))
-
     this.client.on('error', (err) => this.emit(DMEvent.error, err))
-
-    this.client.on('close', (byError) => {
-      this.emit(DMEvent.close, byError)
-      console.log('Is closed by err:', byError)
-    })
+    this.client.on('close', (byError) => this.emit(DMEvent.close, byError))
   }
 
   receiveData(data: Buffer) {
@@ -64,7 +57,6 @@ class DMClient extends EventEmitter {
     const err = await this.sendSocketData(7, joinData)
 
     if (err) {
-      console.log('Join room error:', err)
       return Promise.reject(err)
     } else {
       this.heartBeats()
@@ -113,7 +105,7 @@ class DMClient extends EventEmitter {
     const action = data.readUInt32BE(start + 8) // 4
     const params = data.readUInt32BE(start + 12) // 4
 
-    console.log(packetLen, magic, version, action, params)
+    // console.log(packetLen, magic, version, action, params)
 
     if (action < 4) {
       const onlineCount = data.readUInt32BE(start + 16)
@@ -140,7 +132,7 @@ class DMClient extends EventEmitter {
           }
 
           const parsed = parseData(msg)
-          this.emit(DMEvent.data, msg)
+          this.emit(DMEvent.data, parsed, msg)
           this.emit(parsed.cmd, parsed)
         } catch (error) {
           console.log('Parse error', data)
