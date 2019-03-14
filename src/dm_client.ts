@@ -1,5 +1,6 @@
 import * as net from 'net'
 import { EventEmitter } from 'events'
+import { parseData } from './msg_model'
 
 export enum DMEvent {
   live = 'live',
@@ -59,22 +60,22 @@ class DMClient extends EventEmitter {
         .substr(2, 10),
     })
 
-    const err = await this.sendSocketData(0, 16, 1, 7, 1, joinData)
+    const err = await this.sendSocketData(7, joinData)
 
     if (err) {
       console.log('Join room error:', err)
       return Promise.reject(err)
     } else {
-      this.heartBeat()
+      this.heartBeats()
     }
   }
 
-  sendSocketData(packetLength: number, magic: number, version: number, action: number, param = 1, body = '') {
+  sendSocketData(action: number, body: string, param = 1) {
     const payload = Buffer.from(body)
 
-    if (packetLength === 0) {
-      packetLength = payload.byteLength + 16
-    }
+    const packetLength = payload.byteLength + 16
+    const magic = 16
+    const version = 1
 
     const buffer = Buffer.alloc(packetLength)
 
@@ -90,10 +91,10 @@ class DMClient extends EventEmitter {
     })
   }
 
-  heartBeat() {
+  heartBeats() {
     setInterval(() => {
-      this.sendSocketData(0, 16, 1, 2, 1)
-    }, 10000)
+      this.sendSocketData(2, '')
+    }, 30 * 1000)
   }
 
   parseMsg(data: Buffer, start: number = 0) {
@@ -137,8 +138,9 @@ class DMClient extends EventEmitter {
             this.cacheData = Buffer.alloc(0)
           }
 
-          console.log('Received:', msg)
-          this.emit(msg.cmd.toLowerCase(), msg)
+          console.log('Receive raw:', msg)
+          const parsed = parseData(msg)
+          this.emit(parsed.cmd, parsed)
         } catch (error) {
           console.log('Parse error', data)
         }
