@@ -12,6 +12,7 @@ export class DMClient extends EventEmitter {
   constructor(host: string, port: number, roomID: number)
 
   on(event: DMEvent.close, listener: (byError: boolean) => void): this
+  on(event: DMEvent.data, listener: (rawData: any) => void): this
   on(event: DMEvent.error, listener: (err: Error) => void): this
   on(event: DMEvent.online_changed, listener: (count: number) => void): this
   on(event: CmdType.danmu_msg, listener: (msg: DanmakuMsg) => void): this

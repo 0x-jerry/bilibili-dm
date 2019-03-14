@@ -8,6 +8,7 @@ export enum DMEvent {
   online_changed = 'online_changed',
   error = 'error',
   close = 'close',
+  data = 'data'
 }
 
 class DMClient extends EventEmitter {
@@ -15,7 +16,7 @@ class DMClient extends EventEmitter {
   port: number
   roomID: number
   client: net.Socket
-  cacheData: Buffer
+  cache: Buffer
 
   constructor(host: string, port: number, roomID: number) {
     super()
@@ -25,7 +26,7 @@ class DMClient extends EventEmitter {
 
     this.client = new net.Socket()
 
-    this.cacheData = Buffer.alloc(0)
+    this.cache = Buffer.alloc(0)
 
     this.client.connect(
       {
@@ -102,8 +103,8 @@ class DMClient extends EventEmitter {
       return false
     }
 
-    if (this.cacheData.length > 0) {
-      data = Buffer.concat([this.cacheData, data])
+    if (this.cache.length > 0) {
+      data = Buffer.concat([this.cache, data])
     }
 
     const packetLen = data.readUInt32BE(start + 0) // 4
@@ -122,11 +123,11 @@ class DMClient extends EventEmitter {
       const msgData = data.toString('utf-8', start + 16, start + packetLen)
 
       if (start + packetLen > data.length) {
-        if (this.cacheData.length > 0) {
+        if (this.cache.length > 0) {
           console.log('Cache data error:', data.toString('utf-8', start))
-          this.cacheData = Buffer.alloc(0)
+          this.cache = Buffer.alloc(0)
         } else {
-          this.cacheData = data.slice(start)
+          this.cache = data.slice(start)
         }
 
         return false
@@ -134,12 +135,12 @@ class DMClient extends EventEmitter {
         try {
           const msg = JSON.parse(msgData)
 
-          if (this.cacheData.length > 0) {
-            this.cacheData = Buffer.alloc(0)
+          if (this.cache.length > 0) {
+            this.cache = Buffer.alloc(0)
           }
 
-          console.log('Receive raw:', msg)
           const parsed = parseData(msg)
+          this.emit(DMEvent.data, msg)
           this.emit(parsed.cmd, parsed)
         } catch (error) {
           console.log('Parse error', data)
