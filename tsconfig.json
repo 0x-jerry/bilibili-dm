@@ -5,6 +5,7 @@
     "allowJs": true,
     "checkJs": true,
     "outDir": "dist",
+    "sourceMap": true,
     "module": "commonjs"
   },
   "exclude": ["node_modules"],

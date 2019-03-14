@@ -7,8 +7,8 @@
   "author": "cwxyz007 <jie844067636@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "yarn ts-node src/index.ts",
-    "build": "yarn gulp build",
+    "start": "yarn ts-node example/index.ts",
+    "build": "yarn tsc",
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
@@ -18,8 +18,6 @@
   "devDependencies": {
     "@types/node": "^11.11.3",
     "@types/xml2js": "^0.4.3",
-    "gulp": "^4.0.0",
-    "gulp-typescript": "^5.0.1",
     "ts-node": "^8.0.3",
     "typescript": "^3.3.3333"
   }
