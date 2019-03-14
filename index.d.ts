@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 import { Socket } from 'net'
-import { CmdType, DMEvent, DanmakuMsg, DanmakuGift, DanmakuUser, DanmakuBase } from './src'
+import { CmdType, DMEvent, DanmakuMsg, DanmakuGift, DanmakuUser, DanmakuBase, DanmakuData } from './src'
 
 export class DMClient extends EventEmitter {
   host: string
@@ -12,7 +12,7 @@ export class DMClient extends EventEmitter {
   constructor(host: string, port: number, roomID: number)
 
   on(event: DMEvent.close | 'close', listener: (byError: boolean) => void): this
-  on(event: DMEvent.data | 'data', listener: (parsed: Partial<DanmakuMsg & DanmakuGift>, rawData: any) => void): this
+  on(event: DMEvent.data | 'data', listener: (parsed: DanmakuData, rawData: any) => void): this
   on(event: DMEvent.error | 'error', listener: (err: Error) => void): this
   on(event: DMEvent.online_changed | 'online_changed', listener: (count: number) => void): this
   on(event: CmdType.danmu_msg | 'danmu_msg', listener: (msg: DanmakuMsg) => void): this

@@ -132,7 +132,7 @@ class DMClient extends EventEmitter {
           }
 
           const parsed = parseData(msg)
-          this.emit(DMEvent.data, parsed, msg)
+          this.emit(DMEvent.data, parsed)
           this.emit(parsed.cmd, parsed)
         } catch (error) {
           console.log('Parse error', data)

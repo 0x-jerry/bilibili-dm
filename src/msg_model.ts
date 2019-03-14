@@ -10,7 +10,7 @@ export enum CmdType {
   unknown = 'unknown',
 }
 
-export interface DanmakuUser extends DanmakuBase{
+export interface DanmakuUser extends DanmakuBase {
   username: string
   userID: number
   isAdmin: boolean
@@ -34,8 +34,10 @@ export interface DanmakuMsg extends DanmakuBase, DanmakuUser {
   content: string
 }
 
+export type DanmakuData = Partial<DanmakuGift & DanmakuMsg>
+
 export function parseData(data: any): any {
-  const msg: Partial<DanmakuGift & DanmakuMsg> = {
+  const msg: DanmakuData = {
     raw: data,
     cmd: data.cmd.toLowerCase(),
   }
