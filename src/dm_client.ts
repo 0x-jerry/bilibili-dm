@@ -1,6 +1,14 @@
 import * as net from 'net'
 import { EventEmitter } from 'events'
 
+export enum DMEvent {
+  live = 'live',
+  preparing = 'preparing',
+  online_changed = 'online_changed',
+  error = 'error',
+  close = 'close',
+}
+
 class DMClient extends EventEmitter {
   host: string
   port: number
@@ -28,10 +36,10 @@ class DMClient extends EventEmitter {
 
     this.client.on('data', (data) => this.receiveData(data))
 
-    this.client.on('error', (err) => this.emit('error', err))
+    this.client.on('error', (err) => this.emit(DMEvent.error, err))
 
     this.client.on('close', (byError) => {
-      this.emit('close', byError)
+      this.emit(DMEvent.close, byError)
       console.log('Is closed by err:', byError)
     })
   }
@@ -107,7 +115,7 @@ class DMClient extends EventEmitter {
 
     if (action < 4) {
       const onlineCount = data.readUInt32BE(start + 16)
-      this.emit('online', onlineCount)
+      this.emit(DMEvent.online_changed, onlineCount)
       return false
     } else if (action < 6) {
       const msgData = data.toString('utf-8', start + 16, start + packetLen)
@@ -124,13 +132,13 @@ class DMClient extends EventEmitter {
       } else {
         try {
           const msg = JSON.parse(msgData)
-          console.log('Received:', msg)
-
-          this.emit(msg.cmd, msg)
 
           if (this.cacheData.length > 0) {
             this.cacheData = Buffer.alloc(0)
           }
+
+          console.log('Received:', msg)
+          this.emit(msg.cmd.toLowerCase(), msg)
         } catch (error) {
           console.log('Parse error', data)
         }

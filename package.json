@@ -1,7 +1,8 @@
 {
   "name": "bilibili-dm",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./index.d.ts",
   "repository": "https://github.com/cwxyz007/bilibili-dm.git",
   "author": "cwxyz007 <jie844067636@gmail.com>",
   "license": "MIT",
