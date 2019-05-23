@@ -8,7 +8,7 @@ export enum DMEvent {
   online_changed = 'online_changed',
   error = 'error',
   close = 'close',
-  data = 'data',
+  data = 'data'
 }
 
 class DMClient extends EventEmitter {
@@ -29,9 +29,9 @@ class DMClient extends EventEmitter {
     this.client.connect(
       {
         host: this.host,
-        port: this.port,
+        port: this.port
       },
-      () => this.joinRoom(),
+      () => this.joinRoom()
     )
 
     this.client.on('data', (data) => this.receiveData(data))
@@ -51,7 +51,7 @@ class DMClient extends EventEmitter {
       roomid: this.roomID,
       uid: +Math.random()
         .toString(10)
-        .substr(2, 10),
+        .substr(2, 10)
     })
 
     const err = await this.sendSocketData(7, joinData)
@@ -105,45 +105,55 @@ class DMClient extends EventEmitter {
     const action = data.readUInt32BE(start + 8) // 4
     const params = data.readUInt32BE(start + 12) // 4
 
-    // console.log(packetLen, magic, version, action, params)
-
-    if (action < 4) {
-      const onlineCount = data.readUInt32BE(start + 16)
-      this.emit(DMEvent.online_changed, onlineCount)
-      return false
-    } else if (action < 6) {
-      const msgData = data.toString('utf-8', start + 16, start + packetLen)
-
-      if (start + packetLen > data.length) {
-        if (this.cache.length > 0) {
-          console.log('Cache data error:', data.toString('utf-8', start))
-          this.cache = Buffer.alloc(0)
-        } else {
-          this.cache = data.slice(start)
-        }
-
-        return false
-      } else {
-        try {
-          const msg = JSON.parse(msgData)
-
-          if (this.cache.length > 0) {
-            this.cache = Buffer.alloc(0)
-          }
-
-          const parsed = parseData(msg)
-          this.emit(DMEvent.data, parsed)
-          this.emit(parsed.cmd, parsed)
-        } catch (error) {
-          console.log('Parse error', data)
-        }
-      }
-    } else {
-      return false
+    /**
+     * action value
+     * https://github.com/lovelyyoshino/Bilibili-Live-API/blob/master/API.WebSocket.md#%E6%93%8D%E4%BD%9C%E7%B1%BB%E5%9E%8B
+     */
+    switch (action) {
+      case 3:
+        this.parseAction3(data, start)
+        break
+      case 5:
+        this.parseAction5(data, start, packetLen)
+        break
+      default:
+        break
     }
 
     const nextStart = start + packetLen
     return nextStart === data.length ? false : nextStart
+  }
+
+  private parseAction3(data: Buffer, start: number) {
+    const onlineCount = data.readUInt32BE(start + 16)
+    this.emit(DMEvent.online_changed, onlineCount)
+  }
+
+  private parseAction5(data: Buffer, start: number, packetLen: number) {
+    const msgData = data.toString('utf-8', start + 16, start + packetLen)
+
+    if (start + packetLen > data.length) {
+      if (this.cache.length > 0) {
+        console.log('Cache data error:', data.toString('utf-8', start))
+        this.cache = Buffer.alloc(0)
+      } else {
+        this.cache = data.slice(start)
+      }
+    } else {
+      try {
+        const msg = JSON.parse(msgData)
+
+        if (this.cache.length > 0) {
+          this.cache = Buffer.alloc(0)
+        }
+
+        const parsed = parseData(msg)
+        this.emit(DMEvent.data, parsed)
+        this.emit(parsed.cmd, parsed)
+      } catch (error) {
+        console.log('Parse error', data)
+      }
+    }
   }
 }
 

@@ -7,7 +7,7 @@ export enum CmdType {
   welcome = 'welcome',
   welcome_guard = 'welcome_guard',
   guard_buy = 'guard_buy',
-  unknown = 'unknown',
+  unknown = 'unknown'
 }
 
 export interface DanmakuUser extends DanmakuBase {
@@ -36,10 +36,10 @@ export interface DanmakuMsg extends DanmakuBase, DanmakuUser {
 
 export type DanmakuData = Partial<DanmakuGift & DanmakuMsg>
 
-export function parseData(data: any): any {
+export function parseData(data: { [key: string]: any }) {
   const msg: DanmakuData = {
     raw: data,
-    cmd: data.cmd.toLowerCase(),
+    cmd: data.cmd.toLowerCase()
   }
 
   switch (msg.cmd) {
