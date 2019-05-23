@@ -1,7 +1,7 @@
 import { connectToClient, DMEvent, DanmakuData, CmdType } from '../src'
 
 async function start() {
-  const client = await connectToClient(531)
+  const client = await connectToClient(21221900)
   client.on(DMEvent.data, (data: DanmakuData) => {
     const { raw, ...msg } = data
     if (msg.cmd === CmdType.danmu_msg) {

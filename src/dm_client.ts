@@ -47,11 +47,11 @@ class DMClient extends EventEmitter {
   }
 
   async joinRoom() {
+    /**
+     * https://github.com/lovelyyoshino/Bilibili-Live-API/blob/master/API.WebSocket.md#%E8%BF%9B%E6%88%BF-json-%E5%86%85%E5%AE%B9
+     */
     const joinData = JSON.stringify({
-      roomid: this.roomID,
-      uid: +Math.random()
-        .toString(10)
-        .substr(2, 10)
+      roomid: this.roomID
     })
 
     const err = await this.sendSocketData(7, joinData)

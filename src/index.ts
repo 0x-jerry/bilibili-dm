@@ -1,21 +1,15 @@
 export * from './msg_model'
 export * from './dm_client'
-export * from './utils'
+export * from './api'
 
-import { getRoomID, getRoomInfo, parseXml } from './utils'
+import { getRoomID, getLiveConf } from './api'
 import DMClient from './dm_client'
 
 export async function connectToClient(chatID: number) {
-  const roomID = await getRoomID(chatID)
-  const roomInfo = await getRoomInfo(roomID)
+  const liveInfo = await getRoomID(chatID)
 
-  const xmlData = await parseXml(roomInfo)
+  const liveConf = await getLiveConf(liveInfo.roomId)
 
-  const hosts = xmlData.dm_host_list[0].split(',')
-  const port = +xmlData.dm_port[0]
-  const state = xmlData.state[0]
-
-  console.log(hosts, port, state)
-
-  return new DMClient(hosts[0], port, roomID)
+  console.log(liveConf.host, liveConf.port, liveInfo.status)
+  return new DMClient(liveConf.host, liveConf.port, liveInfo.roomId)
 }
