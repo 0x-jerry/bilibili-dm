@@ -12,7 +12,7 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
