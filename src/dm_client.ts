@@ -1,6 +1,6 @@
 import * as net from 'net'
-import { EventEmitter } from 'events'
-import { parseData } from './msg_model'
+import { EventEmitter } from '@0x-jerry/utils'
+import { CmdType, DanmakuBase, DanmakuData, DanmakuGift, DanmakuMsg, DanmakuUser, parseData } from './msg_model'
 
 export enum DMEvent {
   live = 'live',
@@ -11,7 +11,26 @@ export enum DMEvent {
   data = 'data'
 }
 
-class DMClient extends EventEmitter {
+export type DMClientEventMap = {
+  close(byError: boolean): void
+  data(parsed: DanmakuData, rawData?: any): void
+  error(reason: Error): void
+  online_changed(count: number): void
+
+  [CmdType.danmu_msg](msg: DanmakuMsg): void
+  [CmdType.send_gift](msg: DanmakuGift): void
+  [CmdType.guard_buy](msg: DanmakuGift): void
+  [CmdType.welcome](msg: DanmakuUser): void
+  [CmdType.welcome_guard](msg: DanmakuUser): void
+  [CmdType.live](msg: DanmakuBase): void
+  [CmdType.preparing](msg: DanmakuBase): void
+
+  [CmdType.unknown](msg: any): void
+
+  [key:string]: any
+}
+
+export class DMClient extends EventEmitter<DMClientEventMap> {
   host: string
   port: number
   roomID: number
@@ -151,10 +170,8 @@ class DMClient extends EventEmitter {
         this.emit(DMEvent.data, parsed)
         this.emit(parsed.cmd, parsed)
       } catch (error) {
-        console.log('Parse error', data)
+        console.log('Parse error', data, msgData)
       }
     }
   }
 }
-
-export default DMClient

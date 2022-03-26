@@ -1,5 +1,8 @@
 # Bilibili 直播间弹幕获取
 
+
+> 此仓库实现的 弹幕协议 现已过期，最新协议请参考：https://github.com/lovelyyoshino/Bilibili-Live-API/blob/master/API.WebSocket.md
+
 ## Example
 
 如果要获取直播地址 `https://live.bilibili.com/6` 的弹幕

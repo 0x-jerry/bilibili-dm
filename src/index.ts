@@ -3,7 +3,7 @@ export * from './dm_client'
 export * from './api'
 
 import { getRoomInfo, getLiveConf } from './api'
-import DMClient from './dm_client'
+import { DMClient } from './dm_client'
 
 export async function connectToClient(chatID: number) {
   const roomInfo = await getRoomInfo(chatID)
